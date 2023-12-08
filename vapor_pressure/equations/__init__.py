@@ -4,12 +4,11 @@ sys.path.append((os.path.dirname(__file__)))
 import DIPPR_Vp
 import NIST_Vp
 
+
 #####################################
 # TOTAL NUMBER OF COMPONENTS: 10289 #
 #####################################
-
-
-def CalWagner25(CASRN: str, T: float) -> float:
+def Cal_Wagner25(CASRN: str, T: float) -> float:
     parameters = NIST_Vp.wagner25_coef[CASRN]
     Tc = parameters["Tc"]
     lnPr = parameters["lnPr"]
@@ -22,7 +21,7 @@ def CalWagner25(CASRN: str, T: float) -> float:
     return Psat
 
 
-def CalEquation101(CASRN: str, T: float) -> float:
+def Cal_Equation101(CASRN: str, T: float) -> float:
     parameters = DIPPR_Vp.equation101_coef[CASRN]
     A = parameters["A"]
     B = parameters["B"]
@@ -34,16 +33,42 @@ def CalEquation101(CASRN: str, T: float) -> float:
     return Psat
 
 
-def CalVaporPressure(CASRN: str, T: float) -> float:
+def Get_Temp_Range(CASRN1: str, CASRN2: str) -> tuple[float, float]:
+    CASRN1_DIPPR = DIPPR_Vp.equation101_coef[CASRN1]
+    CASRN2_DIPPR = DIPPR_Vp.equation101_coef[CASRN2]
+    CASRN1_NIST = NIST_Vp.wagner25_coef[CASRN1]
+    CASRN2_NIST = NIST_Vp.wagner25_coef[CASRN2]
+
+    Tmin = max(
+        CASRN1_DIPPR["Tmin"],
+        CASRN2_DIPPR["Tmin"],
+        CASRN1_NIST["Tmin"],
+        CASRN2_NIST["Tmin"],
+    )
+    Tmax = min(
+        CASRN1_DIPPR["Tmax"],
+        CASRN2_DIPPR["Tmax"],
+        CASRN1_NIST["Tmax"],
+        CASRN2_NIST["Tmax"],
+    )
+
+    return Tmin, Tmax
+
+
+def Cal_Vapor_Pressure(CASRN: str, T: float) -> float:
     """
     Input
     ------
-      CAS Registry Number\n
-      Temperature (K)
+      CASRN: CAS Registry Number\n
+      T: Temperature (K)
     Return
     -------
-      Psat (kPa)
+      Psat(T) (kPa)
     """
+
+    if CASRN not in DIPPR_Vp.equation101_coef and CASRN not in NIST_Vp.wagner25_coef:
+        raise Exception(f"There is no coeffcient for CAS Registery Number: {CASRN}")
+
     if (
         CASRN in DIPPR_Vp.equation101_coef
         and T > DIPPR_Vp.equation101_coef[CASRN]["Tmin"]
@@ -70,24 +95,12 @@ def CalVaporPressure(CASRN: str, T: float) -> float:
         D = parameters["D"]
         Psat = NIST_Vp.Wagner25(T, Tc, lnPr, A, B, C, D)
     else:
-        Psat = 0.0
+        raise Exception(
+            f"""
+            The given temperature ({T} K) is outside the valid range for the equations.
+            DIPPR: {DIPPR_Vp.equation101_coef[CASRN]['Tmin']} to {DIPPR_Vp.equation101_coef[CASRN]['Tmax']}
+            NIST: {NIST_Vp.wagner25_coef[CASRN]['Tmin']} to {NIST_Vp.wagner25_coef[CASRN]['Tmax']}
+            """
+        )
 
     return Psat
-
-
-# if __name__ == "__main__":
-#     import matplotlib.pyplot as plt
-#     import numpy as np
-
-#     CASRN = "64175"
-#     Ts = np.arange(100, 310, 10)
-#     Y1s = np.array([])
-#     Y2s = np.array([])
-#     for T in Ts:
-#         Y1 = CalWagner25(CASRN, T)
-#         Y2 = CalEquation101(CASRN, T)
-#         Y1s = np.append(Y1s, Y1)
-#         Y2s = np.append(Y2s, Y2)
-
-#     plt.plot(Ts, Y1s, Ts, Y2s)
-#     plt.show()
