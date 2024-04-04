@@ -5,7 +5,7 @@ from scipy.spatial import distance_matrix
 class CosmoSac:
     # Some codes are cited from https://doi.org/10.1021/acs.jctc.9b01016
 
-    def __init__(self, version=2019):
+    def __init__(self, version=2002):
         # version and system
         self.ver = version  # COSMO-SAC version
         self.x = []  # liquid mole fraction
@@ -132,13 +132,11 @@ class CosmoSac:
             "Pu": 1.87,
             "Am": 1.80,
             "Cm": 1.69,
-        }  # atom radius, ang
+        }
+        # atom radius, ang
 
         # unit change
         self._ang_au = 0.52917721067  # angstrom per 1 atomic unit
-
-        # Verbose
-        self.verbose = False
 
     def _get_var(self, ver):
         poss_ver = (2002, 2010, 2013, 2019)
@@ -147,9 +145,7 @@ class CosmoSac:
             aeff = 7.5
             n_psig = 1
             chb = np.zeros((n_psig, n_psig)) + 85580
-
-            def cES(T):
-                return 8233.36
+            cES = lambda T: 8233.36
 
         elif ver == 2010 or ver == 2013:
             aeff = 7.25
@@ -158,9 +154,7 @@ class CosmoSac:
             chb[1][1] = 4013.78
             chb[1][2] = chb[2][1] = 3016.43
             chb[2][2] = 932.31
-
-            def cES(T):
-                return self._AES + self._BES / T / T
+            cES = lambda T: self._AES + self._BES / T / T
 
         elif ver == 2019:
             aeff = 7.25
@@ -172,9 +166,7 @@ class CosmoSac:
             chb[2][2] = 932.31
             chb[2][3] = chb[3][2] = 1872.84
             chb[3][3] = 2225.67
-
-            def cES(T):
-                return self._AES + self._BES / T / T
+            cES = lambda T: self._AES + self._BES / T / T
 
         else:
             raise ValueError(f"The version must be one of {poss_ver}.")
@@ -204,7 +196,9 @@ class CosmoSac:
         # col : atom index, xyz positions, area, charge/area
 
         for line in file:
+
             if is_ms:
+
                 # flag change
                 if "$coordinates xyz [au]" in line:
                     flag = "coordinate"
@@ -236,6 +230,7 @@ class CosmoSac:
                         )
                         # 0, au, au, au, au**2, e/au**2
             else:
+
                 # flag change
                 if "!DATE" in line:
                     flag = "coordinate"
@@ -530,39 +525,38 @@ class CosmoSac:
 
     def ln_gam_res(self):
         A = np.array(self.A)
-        psigA = np.array(self.psigA)
 
+        psigA = np.array(self.psigA)
         psig = np.einsum("itm,i->itm", psigA, 1 / A)
         psigm = self.cal_sigma_mix()
+
         DelW = self.cal_DelW()
         exp_DelW = np.exp(-DelW / self._R / self.T)
 
         Ap = np.einsum("stmn,isn->istmn", exp_DelW, psig)  # A^(+)
         Apm = np.einsum("stmn,sn->stmn", exp_DelW, psigm)  # A^(+)_mix
 
-        Gam = np.ones(np.shape(psig))
-        Gamm = np.ones(np.shape(psigm))
-        diff = 1
-        iter_ = 0
-        while abs(diff) > 1e-4:
-            iter_ += 1
-            if iter_ > 500:
-                if self.verbose:
-                    print("Segment activity coefficient did not converged.")
-                break
+        for _iter in range(5001):
+            if _iter == 5000:
+                raise Exception("Convergence Failed")
+            if _iter == 0:
+                Gam_old = np.ones(np.shape(psig))
+                Gamm_old = np.ones(np.shape(psigm))
+                Gam = 1 / np.einsum("istmn,isn->itm", Ap, Gam_old)
+                Gamm = 1 / np.einsum("stmn,sn->tm", Apm, Gamm_old)
+            else:
+                Gam_old = Gam
+                Gamm_old = Gamm
+                Gam = 1 / np.einsum("istmn,isn->itm", Ap, Gam)
+                Gamm = 1 / np.einsum("stmn,sn->tm", Apm, Gamm)
 
-            Gam_old = Gam
-            Gamm_old = Gamm
+                Gam_diff = abs((Gam - Gam_old) / Gam_old)
+                Gamm_diff = abs((Gamm - Gamm_old) / Gamm_old)
 
-            Gam = 1 / np.einsum("istmn,isn->itm", Ap, Gam)
-            Gamm = 1 / np.einsum("stmn,sn->tm", Apm, Gamm)
-
-            Gam = (Gam + Gam_old) / 2
-            Gamm = (Gamm + Gamm_old) / 2
-
-            diff = np.sum(abs((Gam - Gam_old) / Gam_old)) + np.sum(
-                abs((Gamm - Gamm_old) / Gamm_old)
-            )
+                Gam = (Gam + Gam_old) / 2
+                Gamm = (Gamm + Gamm_old) / 2
+                if (np.all(Gam_diff) < 1e-5) and (np.all(Gamm_diff) < 1e-5):
+                    break
 
         Gam_part = np.log(Gamm) - np.log(Gam)
         ln_gam_res = np.einsum("itm,itm->i", psigA, Gam_part) / self._aeff

@@ -1,6 +1,9 @@
 import numpy as np
 import os
+import sys
 import pandas as pd
+
+sys.path.append(os.path.dirname(__file__))
 from cosmosac import CosmoSac
 import util as u
 
