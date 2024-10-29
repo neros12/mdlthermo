@@ -43,7 +43,11 @@ def auto_fragmentation(SMILES: str) -> list[int]:
 
 
 def cal_activity_coefficient(
-    SMILES1: str, SMILES2: str, x1: float, x2: float, T: float
+    SMILES1: str,
+    SMILES2: str,
+    x1: float,
+    x2: float,
+    T: float,
 ) -> list[float, float]:
     ####################
     # Check Conditions #

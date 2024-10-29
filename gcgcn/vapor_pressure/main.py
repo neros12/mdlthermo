@@ -4,18 +4,20 @@ import logging
 from os.path import join as opj
 
 # 로깅 수준 설정
-warnings.filterwarnings("ignore")
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+# warnings.filterwarnings("ignore")
+# os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+import keras
 import numpy as np
 import tensorflow as tf
 from pathlib import Path
 from rdkit import Chem
 from keras import initializers
-from keras.models import load_model
+from keras.layers import Input, Dense, LayerNormalization, LeakyReLU
+from keras.models import Model, load_model
 from scipy.linalg import fractional_matrix_power
 
-tf.get_logger().setLevel(logging.ERROR)
+# tf.get_logger().setLevel(logging.ERROR)
 DIR_PATH = Path(__file__).parent
 
 _descript_group = [
@@ -51,7 +53,12 @@ _descript_group = [
 _num_feat = len(_descript_group) + 6  # 5 Hs and aliphatic rings
 
 
-class Antoine(tf.keras.layers.Layer):
+class ReduceSumLayer(keras.layers.Layer):
+    def call(self, x):
+        return tf.reduce_sum(x, axis=1)
+
+
+class Antoine(keras.layers.Layer):
     """
     Custom layer to perform the Antoine equation.
 
@@ -89,7 +96,7 @@ class Antoine(tf.keras.layers.Layer):
         return result
 
 
-class Wagner(tf.keras.layers.Layer):
+class Wagner(keras.layers.Layer):
     """
     Custom layer to perform the Wagner equation.
 
@@ -134,7 +141,7 @@ class Wagner(tf.keras.layers.Layer):
         return result
 
 
-class KingAlNajjar(tf.keras.layers.Layer):
+class KingAlNajjar(keras.layers.Layer):
     """
     Custom layer to perform the King and Al-Najaar's equation.
 
@@ -185,7 +192,7 @@ class KingAlNajjar(tf.keras.layers.Layer):
         return result
 
 
-class GraphConvolution(tf.keras.layers.Layer):
+class GraphConvolution(keras.layers.Layer):
     """
     Graph Convolutional Layer.
 
@@ -209,9 +216,9 @@ class GraphConvolution(tf.keras.layers.Layer):
         super(GraphConvolution, self).__init__(**kwargs)
 
         self.units = units
-        self.activation = tf.keras.activations.get(activation)
-        self.bias_initializer = tf.keras.initializers.get(bias_initializer)
-        self.kernel_initializer = tf.keras.initializers.get(kernel_initializer)
+        self.activation = keras.activations.get(activation)
+        self.bias_initializer = keras.initializers.get(bias_initializer)
+        self.kernel_initializer = keras.initializers.get(kernel_initializer)
 
     def get_config(self):
         """
