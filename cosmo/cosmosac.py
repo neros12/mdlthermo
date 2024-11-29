@@ -5,7 +5,8 @@ from scipy.spatial import distance_matrix
 class CosmoSac:
     # Some codes are cited from https://doi.org/10.1021/acs.jctc.9b01016
 
-    def __init__(self, version=2002):
+
+    def __init__(self, version=2013):
         # version and system
         self.ver = version  # COSMO-SAC version
         self.x = []  # liquid mole fraction

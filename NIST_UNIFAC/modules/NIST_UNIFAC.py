@@ -43,17 +43,21 @@ def auto_fragmentation(SMILES: str) -> list[int]:
 
 
 def cal_activity_coefficient(
-    SMILES1: str, SMILES2: str, x1: float, x2: float, T: float
+    SMILES1: str,
+    SMILES2: str,
+    x1: float,
+    x2: float,
+    T: float,
 ) -> list[float, float]:
     ####################
     # Check Conditions #
     ####################
-    c1 = [int]
+    c1 = []
     try:
         c1 = auto_fragmentation(SMILES1)
     except Exception as ex:
         raise ValueError(f"Fragmentation of component 1 has been failed: {ex}")
-    c2 = [int]
+    c2 = []
     try:
         c2 = auto_fragmentation(SMILES2)
     except Exception as ex:
