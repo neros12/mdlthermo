@@ -5,7 +5,7 @@ import NIST_Vp
 #####################################
 # TOTAL NUMBER OF COMPONENTS: 10289 #
 #####################################
-def Cal_Wagner25(CASRN: str, T: float) -> float:
+def cal_Wagner25(CASRN: str, T: float) -> float:
     parameters = NIST_Vp.wagner25_coef[CASRN]
     Tc = parameters["Tc"]
     lnPr = parameters["lnPr"]
@@ -18,7 +18,7 @@ def Cal_Wagner25(CASRN: str, T: float) -> float:
     return Psat
 
 
-def Cal_Equation101(CASRN: str, T: float) -> float:
+def cal_Equation101(CASRN: str, T: float) -> float:
     parameters = DIPPR_Vp.equation101_coef[CASRN]
     A = parameters["A"]
     B = parameters["B"]
@@ -30,7 +30,7 @@ def Cal_Equation101(CASRN: str, T: float) -> float:
     return Psat
 
 
-def Get_Temp_Range(CASRN1: str, CASRN2: str) -> tuple[float, float]:
+def get_temp_range(CASRN1: str, CASRN2: str) -> tuple[float, float]:
     CASRN1_DIPPR = DIPPR_Vp.equation101_coef[CASRN1]
     CASRN2_DIPPR = DIPPR_Vp.equation101_coef[CASRN2]
     CASRN1_NIST = NIST_Vp.wagner25_coef[CASRN1]
@@ -52,7 +52,7 @@ def Get_Temp_Range(CASRN1: str, CASRN2: str) -> tuple[float, float]:
     return Tmin, Tmax
 
 
-def Cal_Vapor_Pressure(CASRN: str, T: float) -> float:
+def cal_vapor_pressure(CASRN: str, T: float) -> float:
     """
     Input
     ------
