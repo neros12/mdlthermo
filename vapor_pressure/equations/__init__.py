@@ -1,6 +1,3 @@
-import os, sys
-
-sys.path.append((os.path.dirname(__file__)))
 import DIPPR_Vp
 import NIST_Vp
 
@@ -69,16 +66,12 @@ def Cal_Vapor_Pressure(CASRN: str, T: float) -> float:
     if CASRN not in DIPPR_Vp.equation101_coef and CASRN not in NIST_Vp.wagner25_coef:
         raise Exception(f"There is no coeffcient for CAS Registery Number: {CASRN}")
 
-<<<<<<< HEAD
     if (
         CASRN
         in DIPPR_Vp.equation101_coef
         # and T > DIPPR_Vp.equation101_coef[CASRN]["Tmin"]
         # and T < DIPPR_Vp.equation101_coef[CASRN]["Tmax"]
     ):
-=======
-    if CASRN in DIPPR_Vp.equation101_coef:
->>>>>>> d1bb09442c975f8a20ad26d5e935a64402241cf4
         parameters = DIPPR_Vp.equation101_coef[CASRN]
         A = parameters["A"]
         B = parameters["B"]
@@ -86,16 +79,12 @@ def Cal_Vapor_Pressure(CASRN: str, T: float) -> float:
         D = parameters["D"]
         E = parameters["E"]
         Psat = DIPPR_Vp.Equation101(T, A, B, C, D, E)
-<<<<<<< HEAD
     elif (
         CASRN
         in NIST_Vp.wagner25_coef
         # and T > NIST_Vp.wagner25_coef[CASRN]["Tmin"]
         # and T < NIST_Vp.wagner25_coef[CASRN]["Tmax"]
     ):
-=======
-    else:
->>>>>>> d1bb09442c975f8a20ad26d5e935a64402241cf4
         parameters = NIST_Vp.wagner25_coef[CASRN]
         Tc = parameters["Tc"]
         lnPr = parameters["lnPr"]

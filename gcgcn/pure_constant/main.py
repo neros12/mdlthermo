@@ -227,7 +227,7 @@ def predict_TF(SMILES: str) -> Tuple[float, float]:
     nfm, efm = convert_gcgcn_input(SMILES)
     result = []
     for i in range(10):
-        exec(f"result.append(TF_{i}.predict([nfm, efm], verbose=0)[0,0] * 550)")
+        exec(f"result.append(TF_{i}.predict([nfm, efm])[0,0] * 550)")
     val = np.average(result)
     unc = np.std(result)
 
