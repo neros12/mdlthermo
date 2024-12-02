@@ -1,6 +1,3 @@
-# import pandas as pd
-# import warnings
-# import os, pathlib
 import numpy as np
 
 
@@ -39,37 +36,6 @@ def Wagner25(
     lnP = Tc / T * (A * tow + B * tow**1.5 + C * tow**2.5 + D * tow**5) + lnPr
 
     return np.exp(lnP)
-
-
-# warnings.filterwarnings(action="ignore")
-# _path = pathlib.Path(os.getcwd()).parent
-# df_path = os.path.join(_path, "NIST_Vapor_Pressure_Equations.xlsx")
-# df = pd.read_excel(df_path, dtype={"str_CASRN": int})
-# wagner25_coef = {}
-
-# for row in df.itertuples():
-#     Tc = row.d_CON1
-#     lnPr = row.d_PAR1
-#     AA = row.d_PAR2
-#     BB = row.d_PAR3
-#     CC = row.d_PAR4
-#     DD = row.d_PAR5
-
-#     if pd.isna(row.d_PAR4):
-#         CC = ""
-#     if pd.isna(row.d_PAR5):
-#         DD = ""
-
-#     wagner25_coef[str(row.str_CASRN)] = {
-#         "Tc": Tc,
-#         "lnPr": lnPr,
-#         "A": AA,
-#         "B": BB,
-#         "C": CC,
-#         "D": DD,
-#         "Tmin": row.d_VAR1MIN,
-#         "Tmax": row.d_VAR1MAX,
-#     }
 
 wagner25_coef = {
     "50000": {

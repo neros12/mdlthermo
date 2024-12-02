@@ -29,43 +29,7 @@ def Equation101(T: float, A: float, B=0.0, C=0.0, D=0.0, E=0.0) -> float:
     if E == "":
         E = 0.0
 
-    return np.exp(A + B / T + C * np.log(T) + D * (T**E))/1000
-
-
-# equation101_coef = {}
-# warnings.filterwarnings(action="ignore")
-# _path = pathlib.Path(os.getcwd()).parent
-# df_path = os.path.join(_path, "DIPPR_Vapor_Pressure_Equations.xlsx")
-# df = pd.read_excel(df_path, dtype={"str_CASRN": str})
-
-# for row in df.itertuples():
-#     if row.i_EQUATION_ID == 100:
-#         continue
-
-#     AA = row.d_A
-#     BB = row.d_B
-#     CC = row.d_C
-#     DD = row.d_D
-#     EE = row.d_E
-
-#     if pd.isna(row.d_B):
-#         continue
-#     if pd.isna(row.d_C):
-#         CC = ""
-#     if pd.isna(row.d_D):
-#         DD = ""
-#     if pd.isna(row.d_E):
-#         EE = ""
-
-#     equation101_coef[row.str_CASRN] = {
-#         "A": AA,
-#         "B": BB,
-#         "C": CC,
-#         "D": DD,
-#         "E": EE,
-#         "Tmin": row.d_MIN_T,
-#         "Tmax": row.d_MAX_T,
-#     }
+    return np.exp(A + B / T + C * np.log(T) + D * (T**E)) / 1000
 
 
 equation101_coef = {
