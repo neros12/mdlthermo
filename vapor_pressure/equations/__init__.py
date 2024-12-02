@@ -4,10 +4,10 @@ from pathlib import Path
 
 from rdkit import Chem
 
-import DIPPR_Vp
-import NIST_Vp
+from . import DIPPR_Vp
+from . import NIST_Vp
 
-FILE_DIR = Path(__file__)
+FILE_DIR = Path(__file__).parent
 
 with open(opj(FILE_DIR, "InChIKey_to_CASRN.json"), "r") as f:
     InChIKey_to_CASRN = json.load(f)
