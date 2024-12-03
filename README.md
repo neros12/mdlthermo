@@ -14,6 +14,7 @@ ROOT FOLDER
 
 # Modules  
 ## GCGCN - pure constant estimation
+After installing MDL_modules, it may be imported into Python code like:
 ```
 from MDL_modules import GCGCN
 ```
