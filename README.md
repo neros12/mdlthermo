@@ -1,6 +1,6 @@
 # Installation
 '''
-git clone
+git clone https://github.com/neros12/MDL_modules.git
 '''
 
 # Directory Structure
