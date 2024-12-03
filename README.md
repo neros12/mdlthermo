@@ -15,6 +15,11 @@ ROOT FOLDER
 # Modules  
 ## GCGCN - pure constant estimation
 ```
+from MDL_modules import GCGCN
+```
+
+
+```
 GCGCN.predict_TBN(SMILES: str)
 ```
 ```
