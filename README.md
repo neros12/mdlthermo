@@ -11,10 +11,12 @@ code >> download_zip
 ### Directory Structure
 In order to import this projects, your direcotry structure must be like
 
+```
 ROOT FOLDER  
 ├── MDL_modules/  
 │  
 └── your_script.py  
+```   
 <br />
 <br />
 After installing MDL_modules, you could import module into Python code like:  
