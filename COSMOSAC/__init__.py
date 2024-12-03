@@ -7,8 +7,8 @@ def cal_COSMOSAC(SMILES1, SMILES2, x1, x2, T, predict=False):
     else:
         COSMOSAC_module = COSMOSAC(version=2019, predict=False)
 
-    COSMOSAC_module.add_comp(SMILES1)
-    COSMOSAC_module.add_comp(SMILES2)
+    COSMOSAC_module.add_comp(SMILES=SMILES1)
+    COSMOSAC_module.add_comp(SMILES=SMILES2)
     COSMOSAC_module.x = [x1, x2]
     COSMOSAC_module.T = T
 
