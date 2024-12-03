@@ -10,9 +10,8 @@ ROOT FOLDER
 ├── MDL_modules/  
 │  
 └── your_script.py  
-
-  
-
+<br />
+<br />
 After installing MDL_modules, yoc import module into Python code like:  
 
 ```
