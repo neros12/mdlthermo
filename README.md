@@ -17,7 +17,7 @@ ROOT FOLDER
 └── your_script.py  
 <br />
 <br />
-After installing MDL_modules, yoc import module into Python code like:  
+After installing MDL_modules, you could import module into Python code like:  
 
 ```
 from MDL_modules import *
