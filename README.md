@@ -73,5 +73,19 @@ GCGCN.predict_HFUS(SMILES: str)
 
 ## UNIFAC  
 
-## Vapor Pressure
+### Refereence
+[1] Kang, Jeong Won, Vladimir Diky, and Michael Frenkel. "New modified UNIFAC parameters using critically evaluated phase equilibrium data." Fluid Phase Equilibria 388 (2015): 128-141.
   
+## Vapor Pressure  
+  
+
+### Reference
+[1]  Frenkel, Michael D., et al. "ThermoData Engine (TDE) Version 9.0 (Pure Compounds, Binary Mixtures, Ternary Mixtures, and Chemical Reactions); NIST Standard Reference Database 103b." (2014).
+[2]  
+
+
+
+
+# Contact 
+E=mail: neros12@naver.com
+
