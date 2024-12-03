@@ -3,20 +3,17 @@
 git clone https://github.com/neros12/MDL_modules.git
 ```
 
-# Directory Structure
-PROJECT_FOLDER  
+### Directory Structure
+In order to import this projects, your direcotry structure must be like
+
+ROOT FOLDER  
 ├── MDL_modules/  
 │  
 └── your_script.py  
 
 
-# Modules
-MDL_modules.GCGCN
-
-
-Returns tuple of predicited value and uncertainty
-
-
+# Modules  
+## GCGCN - pure constant estimation
 ```
 GCGCN.predict_TBN(SMILES: str)
 ```
