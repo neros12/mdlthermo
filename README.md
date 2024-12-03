@@ -3,6 +3,10 @@ git bash
 ```
 git clone https://github.com/neros12/MDL_modules.git
 ```
+  
+or  
+  
+code >> download_zip  
 
 ### Directory Structure
 In order to import this projects, your direcotry structure must be like
