@@ -87,5 +87,5 @@ GCGCN.predict_HFUS(SMILES: str)
 
 
 # Contact 
-E=mail: neros12@naver.com
+E-mail: neros12@naver.com
 
