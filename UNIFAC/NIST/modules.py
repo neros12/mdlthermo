@@ -53,25 +53,25 @@ def cal_activity_coefficient(
     x1: float,
     x2: float,
     T: float,
-    cmp1_subgoups: Optional[List[int]] = None,
-    cmp2_subgoups: Optional[List[int]] = None,
+    cmp1_subgroups: Optional[List[int]] = None,
+    cmp2_subgroups: Optional[List[int]] = None,
 ) -> Tuple[float, float]:
 
-    if not cmp1_subgoups:
+    if not cmp1_subgroups:
         try:
             c1 = auto_fragmentation(SMILES1)
         except Exception as ex:
             raise ValueError(f"Fragmentation of component 1 has been failed: {ex}")
     else:
-        c1 = cmp1_subgoups
+        c1 = cmp1_subgroups
 
-    if not cmp2_subgoups:
+    if not cmp2_subgroups:
         try:
             c2 = auto_fragmentation(SMILES2)
         except Exception as ex:
             raise ValueError(f"Fragmentation of component 2 has been failed: {ex}")
     else:
-        c2 = cmp2_subgoups
+        c2 = cmp2_subgroups
 
     total_subgroups = {*c1, *c2}
     total_maingroups = {
