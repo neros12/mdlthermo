@@ -749,18 +749,35 @@ class COSMOSAC:
 
         return ek
 
-    def add_comp(self, SMILES):
-        try:
+    def add_comp(self, file=None, SMILES=None, name=None):
+        """Add a component to the COSMO-SAC using the COSMO file of ML model.
+
+        Parameters
+        ----------
+        file : str, optional
+            The path of the cosmo file. The default is None.
+        smiles : str, optional
+            SMILES string of the compound. The default is None.
+        name : str, optional
+            The name of the component. The default is None.
+
+        Raises
+        ------
+        ValueError : If the COSMO file nor SMILES string is not provided.
+        """
+        if file is not None:  # If COSMO file is given
+            self.add_comp_from_COSMO_file(file, name=name)
+
+        elif SMILES is not None:  # If SMILES string is given
             file_dir = get_COSMO_file_dir(SMILES)
-            self.add_comp_from_COSMO_file(file_dir)
-        except Exception as e:
-            if self.predict:
-                if self.use_GPU:
-                    pass
-                else:
-                    self.add_comp_from_GCGCN_CPU(SMILES)
-            else:
-                raise ValueError(e)
+
+            if file_dir is not None:  # If the COSMO file exists
+                self.add_comp_from_COSMO_file(file_dir)
+            else:  # Else, predict the COSMO properties
+                self.add_comp_from_GCGCN_CPU(SMILES)
+
+        else:
+            raise ValueError("The COSMO file or SMILES string is necessary.")
 
     def add_comp_from_COSMO_file(self, file, name=None):
         """Add a component to the COSMO-SAC object.
@@ -1052,22 +1069,39 @@ class COSMOSAC:
         return gam
 
 
-def get_COSMO_file_dir(SMILES):
+def get_COSMO_file_dir(SMILES: str) -> (str | None):
+    """Get COSMO file's directory if there is already calculated molecule.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES string of the compound.
+
+    Return
+    ------
+    str or None : The COSMO file directory if available, else None.
+
+    Raises
+    ------
+    ValueError : If the molecule is not readable by rdkit.
+    """
     with open(opj(FILE_DIR, "InChIKey_to_index.json")) as json_file:
         InChIKey_to_index = json.load(json_file)
 
     try:
-        mol = Chem.MolFromSmiles(SMILES)
-        InChIKey = Chem.inchi.MolToInchiKey(mol)
+       InChIKey = Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(SMILES))
+    except ValueError:
+        raise ValueError("The molecule is not supported.")
+
+    if InChIKey in InChIKey_to_index:  # If InchIKey is in the dctionary keys
         COSMO_file_dir = opj(
             FILE_DIR,
             "cosmo_files",
             f"{InChIKey_to_index[InChIKey]}.cosmo",
         )
-
         return COSMO_file_dir
-    except:
-        raise ValueError("Unsupported Component!")
+    else:
+        return None
 
 
 smarts_cosmo_list = [
