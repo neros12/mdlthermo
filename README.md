@@ -11,13 +11,14 @@ ROOT FOLDER
 │  
 └── your_script.py  
 
+After installing MDL_modules, yoc import module into Python code like:
+```
+from MDL_modules import *
+```
 
-# Modules  
+# Module Documentation  
 ## GCGCN - pure constant estimation
-After installing MDL_modules, it may be imported into Python code like:
-```
-from MDL_modules import GCGCN
-```
+
 
 
 ```
