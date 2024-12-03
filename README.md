@@ -73,7 +73,7 @@ GCGCN.predict_HFUS(SMILES: str)
 
 ## UNIFAC  
 
-### Refereence
+### Reference
 [1] Kang, Jeong Won, Vladimir Diky, and Michael Frenkel. "New modified UNIFAC parameters using critically evaluated phase equilibrium data." Fluid Phase Equilibria 388 (2015): 128-141.
   
 ## Vapor Pressure  
