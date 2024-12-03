@@ -1,4 +1,5 @@
 # Installation
+git bash
 ```
 git clone https://github.com/neros12/MDL_modules.git
 ```
