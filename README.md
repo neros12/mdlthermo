@@ -59,8 +59,13 @@ GCGCN.predict_HFUS(SMILES: str)
 [1] Hwang, Sun Yoo, and Jeong Won Kang. "Group Contribution-Based Graph Convolution Network: Pure Property Estimation Model." International Journal of Thermophysics 43.9 (2022): 136.  
   
 ## COMSO-SAC  
-
-
+```
+from MDL_modules import COSMOSAC
+```
+  
+```
+COSMOSAC.cal_COSMOSAC(SMILES1, SMILES2, x1, x2, T, predict=False):
+```
 
 
 
@@ -72,18 +77,27 @@ GCGCN.predict_HFUS(SMILES: str)
 [4]  Eric Mullins, Y.A. Liu, Adel Ghaderi, Stephen Fast, "Sigma Profile Database for Predicting Solid Solubility in Pure and Mixed Solvent Mixtures for Organic Pharmacological Compounds with COSMO-Based Thermodynamic Methods," Ind. Eng. Chem. Research, 47, 1707-1725 (2008)  
 
 ## UNIFAC  
+```
+from MDL_modules.UNIFAC.NIST import cal_NIST_UNIFAC 
+```
+  
+```
+COSMOSAC.cal_NIST_UNIFAC(SMILES1, SMILES2, x1, x2, T, cmp1_subgroups, cmp2_subgroups):
+```
+
+
 
 ### Reference
 [1] Kang, Jeong Won, Vladimir Diky, and Michael Frenkel. "New modified UNIFAC parameters using critically evaluated phase equilibrium data." Fluid Phase Equilibria 388 (2015): 128-141.
   
 ## Vapor Pressure  
-  
+
+```
+from MDL_modules.vapor_pressure import equations, GCGCN 
+```
 
 ### Reference
 [1]  Frenkel, Michael D., et al. "ThermoData Engine (TDE) Version 9.0 (Pure Compounds, Binary Mixtures, Ternary Mixtures, and Chemical Reactions); NIST Standard Reference Database 103b." (2014).
-[2]  
-
-
 
 
 # Contact 
