@@ -17,9 +17,7 @@ ROOT FOLDER
 │  
 └── your_script.py  
 ```   
-<br />
 After installing MDL_modules, you could import module into Python code like:  
-
 ```
 from MDL_modules import *
 ```
@@ -27,6 +25,9 @@ from MDL_modules import *
 # Module Documentation  
 ## GCGCN - pure constant estimation
 
+```
+from MDL_modules import GCGCN
+```
 
 
 ```
@@ -53,3 +54,24 @@ GCGCN.predict_HFORM(SMILES: str)
 ```
 GCGCN.predict_HFUS(SMILES: str)
 ```
+
+### Reference  
+[1] Hwang, Sun Yoo, and Jeong Won Kang. "Group Contribution-Based Graph Convolution Network: Pure Property Estimation Model." International Journal of Thermophysics 43.9 (2022): 136.  
+  
+## COMSO-SAC  
+
+
+
+
+
+
+### Reference  
+[1]  Kang, Sung Shin, Jonghwi Lee, and Jeong Won Kang. "An extended COSMO-SAC method for the prediction of carboxylic acid solubility." Fluid Phase Equilibria 521 (2020): 112673.  
+[2]  Bell, Ian H., et al. "A benchmark open-source implementation of COSMO-SAC." Journal of chemical theory and computation 16.4 (2020): 2635-2646.  
+[3]  Ryu, Beom Chan, et al. "Group Contribution Based Graph Convolution Network: Predicting Vapor–Liquid Equilibrium with COSMO-SAC-ML." International Journal of Thermophysics 44.4 (2023): 49.  
+[4]  Eric Mullins, Y.A. Liu, Adel Ghaderi, Stephen Fast, "Sigma Profile Database for Predicting Solid Solubility in Pure and Mixed Solvent Mixtures for Organic Pharmacological Compounds with COSMO-Based Thermodynamic Methods," Ind. Eng. Chem. Research, 47, 1707-1725 (2008)  
+
+## UNIFAC  
+
+## Vapor Pressure
+  
