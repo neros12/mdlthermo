@@ -7,4 +7,5 @@ from .modules import (
     predict_TC,
     predict_TMN,
     predict_VC,
+    predict_omega
 )
