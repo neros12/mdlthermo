@@ -101,8 +101,6 @@ dependencies:
   - sympy                     1.13.2          py312haa95532_0
   - tbb                       2021.8.0             h59b6b97_0
   - tk                        8.6.14               h0416ee5_0
-  - torchaudio                2.5.1                    pypi_0    pypi
-  - torchvision               0.20.1                   pypi_0    pypi
   - typing-extensions         4.11.0          py312haa95532_0
   - typing_extensions         4.11.0          py312haa95532_0
   - tzdata                    2024b                h04d1e81_0
