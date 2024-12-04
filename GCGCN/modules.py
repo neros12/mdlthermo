@@ -61,35 +61,35 @@ SMARTS_list = [
 ]
 
 smarts_omega_list = [
-    '[CX4v4]',
-    '[CX3v4;$([CX3v4](=*))]',
-    '[CX2v4;$([CX2v4](=*)(=*))]',
-    '[CX2v4;$([CX2v4](#*))]',
-    '[C-v3]',
-    '[c]',
-    '[NX3v3]',
-    '[NX2v3;$([NX2v3](=*))]',
-    '[NX1v3;$([NX1v3](#*))]',
-    '[N+v4]',
-    '[N-v2]',
-    '[n+0]',
-    '[OX2v2]',
-    '[OX1v2;$([OX1v2](=*))]',
-    '[O+v3]',
-    '[O-v1]',
-    '[o]',
-    '[Sv2]',
-    '[Sv4]',
-    '[Sv6]',
-    '[s]',
-    '[Pv3]',
-    '[Pv5]',
-    '[FX1v1]',
-    '[ClX1v1]',
-    '[BrX1v1]',
-    '[IX1v1]',
-    '[Siv3]',
-    '[Siv4]'
+    "[CX4v4]",
+    "[CX3v4;$([CX3v4](=*))]",
+    "[CX2v4;$([CX2v4](=*)(=*))]",
+    "[CX2v4;$([CX2v4](#*))]",
+    "[C-v3]",
+    "[c]",
+    "[NX3v3]",
+    "[NX2v3;$([NX2v3](=*))]",
+    "[NX1v3;$([NX1v3](#*))]",
+    "[N+v4]",
+    "[N-v2]",
+    "[n+0]",
+    "[OX2v2]",
+    "[OX1v2;$([OX1v2](=*))]",
+    "[O+v3]",
+    "[O-v1]",
+    "[o]",
+    "[Sv2]",
+    "[Sv4]",
+    "[Sv6]",
+    "[s]",
+    "[Pv3]",
+    "[Pv5]",
+    "[FX1v1]",
+    "[ClX1v1]",
+    "[BrX1v1]",
+    "[IX1v1]",
+    "[Siv3]",
+    "[Siv4]",
 ]
 
 
@@ -533,7 +533,7 @@ def get_omega_h(mol):
 
     # If the number of heavy atoms of the molecule is more than 25,
     if mol.GetNumAtoms() > 25:
-        raise ValueError('The molecule is too large.')
+        raise ValueError("The molecule is too large.")
 
     # Find the SMARTS patterns
     for smarts_id, smarts in enumerate(smarts_omega_list):
@@ -545,7 +545,7 @@ def get_omega_h(mol):
 
     # 분자의 기초 그룹 합이 전체 heavy atom 수와 안맞으면 fragmentation 실패.
     if not np.sum(h) == mol.GetNumHeavyAtoms():
-        raise ValueError('Fragmentation failed.')
+        raise ValueError("Fragmentation failed.")
 
     # 원자의 수소 개수와 고리 여부를 찾는다.
     for atom in mol.GetAtoms():
@@ -575,7 +575,7 @@ def get_omega_a(mol):
         Normalized adjacency matrix of the molecule.
     """
     # Calculate the adjacency matrix A.
-    a = Chem.GetAdjacencyMatrix(mol).astype('float64')
+    a = Chem.GetAdjacencyMatrix(mol).astype("float64")
 
     # Fill the diagonal of A with 1 for self-loops.
     np.fill_diagonal(a, 1)
@@ -590,8 +590,7 @@ def get_omega_a(mol):
     # Pad the matrix with zeros to match the size of max_atom.
     pad = 25 - len(a)
 
-    a_norm = np.pad(a_norm, ((0, pad), (0, pad)), 'constant',
-                    constant_values=0.0)
+    a_norm = np.pad(a_norm, ((0, pad), (0, pad)), "constant", constant_values=0.0)
     return a_norm
 
 
@@ -622,7 +621,7 @@ def get_omega_input(smiles):
     mol = Chem.MolFromSmiles(smiles)
 
     if mol is None:
-        raise ValueError('The molecule could not interpreted.')
+        raise ValueError("The molecule could not interpreted.")
     else:
         h = get_omega_h(mol)
         a = get_omega_a(mol)
