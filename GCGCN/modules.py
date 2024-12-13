@@ -11,6 +11,41 @@ from scipy.linalg import fractional_matrix_power
 
 FILE_DIR = Path(__file__).parent
 
+TBN_param_list = []
+TMN_param_list = []
+TF_param_list = []
+TC_param_list = []
+PC_param_list = []
+VC_param_list = []
+HFORM_param_list = []
+HFUS_param_list = []
+for i in range(10):
+    with open(opj(FILE_DIR, "parameters", f"TBN{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        TBN_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"TMN{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        TMN_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"TF{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        TF_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"TC{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        TC_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"PC{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        PC_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"VC{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        VC_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"HFORM{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        HFORM_param_list.append(param_list)
+    with open(opj(FILE_DIR, "parameters", f"HFUS{i}.json"), "rb") as file:
+        param_list = json.load(file)
+        HFUS_param_list.append(param_list)
+
+
 SMARTS_list = [
     "[CX4H3]",
     "[CX3H2v4]",
@@ -292,10 +327,7 @@ def predict_HFORM(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"HFORM{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in HFORM_param_list:
         result.append(5400 * GCGCN(nfm, efm, param_list) - 4000)
 
     val = np.average(result)
@@ -321,10 +353,7 @@ def predict_HFUS(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"HFUS{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in HFUS_param_list:
         result.append(100 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
@@ -350,10 +379,7 @@ def predict_PC(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"PC{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in PC_param_list:
         result.append(13000 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
@@ -379,10 +405,7 @@ def predict_TC(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"TC{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in TC_param_list:
         result.append(2000 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
@@ -408,10 +431,7 @@ def predict_TBN(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"TBN{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in TBN_param_list:
         result.append(1620 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
@@ -437,10 +457,7 @@ def predict_TF(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"TF{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in TF_param_list:
         result.append(550 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
@@ -466,10 +483,7 @@ def predict_TMN(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"TMN{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in TMN_param_list:
         result.append(720 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
@@ -495,10 +509,7 @@ def predict_VC(SMILES: str) -> Tuple[float, float]:
     nfm, efm = _get_input_matrices(SMILES)
 
     result = []
-    for i in range(10):
-        with open(opj(FILE_DIR, "parameters", f"VC{i}.json"), "rb") as file:
-            param_list = json.load(file)
-
+    for param_list in VC_param_list:
         result.append(1.2 * GCGCN(nfm, efm, param_list))
 
     val = np.average(result)
