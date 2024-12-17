@@ -661,13 +661,15 @@ class Peng_Robinson:
 
             # Update pressure or temperature with sigmoid damping
             if state == 1:
-                T /= 0.9 + 0.2 / (1 + np.exp(1 - z_sum))  # 0.9 - 1.1
+                T /= 0.8 + 0.4 / (1 + np.exp(1 - z_sum))  # 0.8 - 1.2
             if state == 2:
-                T *= 0.9 + 0.2 / (1 + np.exp(1 - z_sum))
+                T *= 0.8 + 0.4 / (1 + np.exp(1 - z_sum))
             if state == 3:
-                p *= 0.0 + 2.0 / (1 + np.exp(4 * (1 - z_sum)))  # 0.0 - 2.0
+                slope = 1 + 3 / (1 + np.exp(10 - p))  # High p -> fast converge
+                p *= 2 / (1 + np.exp(slope * (1 - z_sum)))  # 0.0 - 2.0
             if state == 4:
-                p /= 0.0 + 2.0 / (1 + np.exp(4 * (1 - z_sum)))
+                slope = 1 + 3 / (1 + np.exp(10 - p))
+                p /= 2 / (1 + np.exp(slope * (1 - z_sum)))
 
             # print(f"Iteration {iteration}: ",
             #       f"p = {p:.4f}, T = {T:.4f}, z1 = {z1}, z2 = {z2}",

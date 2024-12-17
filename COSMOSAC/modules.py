@@ -254,6 +254,8 @@ class COSMOSAC:
     def _get_cosmo_from_ms(self, file):
         """Get COSMO properties from the cosmo file in Material Studio.
 
+        This code reads the KU database's COSMO files.
+
         Parameters
         ----------
         opened_file : _io.TextIOWrapper
@@ -328,7 +330,9 @@ class COSMOSAC:
         return A, V, atom, coord, seg
 
     def _get_cosmo_from_not_ms(self, file):
-        """Get COSMO properties from the cosmo file in Material Studio.
+        """Get COSMO properties from the cosmo file not in Material Studio.
+
+        This code reads the VT and UD databases' COSMO files.
 
         Parameters
         ----------
