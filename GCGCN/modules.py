@@ -260,7 +260,8 @@ def _get_input_matrices(SMILES: str, max_atom=25) -> Tuple[np.ndarray, np.ndarra
 
     # Padding the edge feature matrix to the maximum atom 25
     padding = max_atom - len(group_index_dict)
-    efm = np.pad(efm, ((0, padding), (0, padding)), "constant", constant_values=0.0)
+    efm = np.pad(efm, ((0, padding), (0, padding)),
+                 "constant", constant_values=0.0)
 
     return nfm, efm
 
@@ -601,7 +602,8 @@ def get_omega_a(mol):
     # Pad the matrix with zeros to match the size of max_atom.
     pad = 25 - len(a)
 
-    a_norm = np.pad(a_norm, ((0, pad), (0, pad)), "constant", constant_values=0.0)
+    a_norm = np.pad(a_norm, ((0, pad), (0, pad)),
+                    "constant", constant_values=0.0)
     return a_norm
 
 
@@ -640,13 +642,15 @@ def get_omega_input(smiles):
     return h, a
 
 
-def predict_omega(smiles: str) -> float:
+def _predict_omega_single(smiles: str, omega_param: list) -> float:
     """Predicts the omega value for a given SMILES string.
 
     Parameters
     ----------
     smiles : str
         SMILES representation of the molecule.
+    omega_param : list
+        The list of machine learning parameters.
 
     Returns
     -------
@@ -654,11 +658,6 @@ def predict_omega(smiles: str) -> float:
         Predicted acentric factor.
     """
     h, a = get_omega_input(smiles)  # Get node and edge matrices
-
-    # Get parameters
-    with open(opj(FILE_DIR, "parameters", "omega_param.json"), "rb") as file:
-        omega_param = json.load(file)
-    omega_param = [np.array(param) for param in omega_param]
 
     # GCN Layer 1
     x = np.dot(np.dot(a, h), omega_param[0].T) + omega_param[1]
@@ -728,3 +727,46 @@ def predict_omega(smiles: str) -> float:
 
     # Final scaling
     return 0.55139863 + 0.23780635 * x[0]
+
+
+def predict_omega(smiles: str) -> tuple:
+    """Predicts the omega value for a given SMILES string.
+
+    It calculates omega multiple times and returns the mean and standard
+    deviation.
+
+    Parameters
+    ----------
+    smiles : str
+        SMILES representation of the molecule.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the mean and standard deviation of the predicted
+        acentric factor.
+    """
+    # Get parameters
+    with open(opj(FILE_DIR, "parameters", "omega_param.json"), "rb") as file:
+        omega_param_master = json.load(file)
+    omega_param_master = [np.array(param) for param in omega_param_master]
+
+    # Run predictions 50 times and collect results
+    np.random.seed(0)
+    predictions = []
+    for _ in range(50):
+        # Apply 10% dropout to parameters
+        rng = np.random.default_rng()  # Create a random number generator
+        omega_param = [0]*22
+
+        for i, param in enumerate(omega_param_master):
+            mask = rng.random(param.shape) > 0.1  # Create a mask with 90% ones
+            omega_param[i] = param * mask  # Apply the mask
+
+        predictions.append(_predict_omega_single(smiles, omega_param))
+
+    # Calculate mean and standard deviation
+    val = np.mean(predictions)
+    std = np.std(predictions)
+
+    return val, std
