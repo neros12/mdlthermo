@@ -752,12 +752,12 @@ def predict_omega(smiles: str) -> tuple:
     omega_param_master = [np.array(param) for param in omega_param_master]
 
     # Run predictions 50 times and collect results
-    np.random.seed(0)
     predictions = []
-    for _ in range(50):
+    for i in range(50):
         # Apply 10% dropout to parameters
-        rng = np.random.default_rng()  # Create a random number generator
-        omega_param = [0]*22
+        # Create the determined random numbers with using determined seed
+        rng = np.random.default_rng(seed=i)
+        omega_param = [0] * 22
 
         for i, param in enumerate(omega_param_master):
             mask = rng.random(param.shape) > 0.1  # Create a mask with 90% ones
