@@ -4,7 +4,7 @@ import numpy as np
 from rdkit import Chem, RDLogger
 from rdkit.Chem import Descriptors
 
-import parameters
+from . import parameters
 
 
 RDLogger.DisableLog("rdApp.*")
