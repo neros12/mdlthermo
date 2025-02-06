@@ -1,6 +1,6 @@
 git_ignore
 script.py
-
+*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
