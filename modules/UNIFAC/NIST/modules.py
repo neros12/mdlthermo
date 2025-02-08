@@ -1,33 +1,71 @@
-from typing import List, Optional, Tuple
+from typing import List, Dict
+from collections import Counter
 
 import numpy as np
-from rdkit import Chem, RDLogger
+from rdkit import Chem
 from rdkit.Chem import Descriptors
 
 from . import parameters
 
 
-RDLogger.DisableLog("rdApp.*")
+def auto_fragment(SMILES: str) -> Dict[int, int]:
+    """
+    Fragment a molecule given by a SMILES string into UNIFAC groups automatically.
 
+    This function takes a SMILES (Simplified Molecular Input Line Entry System) string,
+    converts it to an RDKit molecule object, and identifies which UNIFAC groups the
+    molecule consists of. It returns a dictionary where the keys are subgroup IDs and
+    the values are the counts of each subgroup in the molecule.
 
-def auto_fragmentation(SMILES: str) -> List[int]:
-    try:
-        mol = Chem.MolFromSmiles(SMILES)
-    except:
-        raise ValueError("Invalid SMILES format")
+    Parameters:
+    ----------
+    SMILES : str
+        A valid SMILES string representing the chemical structure of the molecule.
 
-    if mol == None:
-        raise ValueError("Invalid SMILES format")
+    Returns:
+    -------
+    Dict[group index, number of groups]
+        A dictionary containing the UNIFAC subgroup IDs as keys and the number of times
+        each subgroup appears in the molecule as values.
+
+    Raises:
+    ------
+    ValueError
+        If the molecule cannot be fully represented by the available UNIFAC groups.
+
+    Notes:
+    ------
+    - The function uses RDKit to parse the molecule and match it against predefined UNIFAC
+      subgroup SMARTS patterns from the `parameters.subgroup_SMARTS` list.
+    - Groups marked with the "EX" SMARTS pattern are excluded as they are not supported.
+    - After a subgroup is identified, the matched atoms are removed from further consideration.
+
+    Dependencies:
+    -------------
+    - RDKit: For molecular structure manipulation and substructure matching.
+    - numpy: For array operations.
+    - parameters: A module containing the predefined UNIFAC subgroup SMARTS patterns.
+
+    Example:
+    --------
+    ```python
+    from your_module import auto_fragment
+
+    SMILES = "CCO"
+    subgroups = auto_fragment(SMILES)
+    print(subgroups)
+    ```
+    """
+    mol = Chem.MolFromSmiles(SMILES)
 
     num_atoms = Descriptors.HeavyAtomCount(mol)
     list_atoms = np.arange(num_atoms)
     subgroups = []
-
     for item in parameters.subgroup_SMARTS:
         subgroup_ID = item[0]
         SMARTS = item[1]
 
-        # These UNIFAC groups are not supported in this version.
+        # These groups are not supported in current version.
         if SMARTS == "EX":
             continue
 
@@ -44,84 +82,128 @@ def auto_fragmentation(SMILES: str) -> List[int]:
     if len(list_atoms) != 0:
         raise ValueError("Molecule is not only consist of UNIFAC groups")
 
-    return subgroups
+    return dict(Counter(subgroups))
 
 
-def cal_activity_coefficient(
-    SMILES1: str,
-    SMILES2: str,
-    x1: float,
-    x2: float,
+def UNIFAC(
+    components: List[Dict[int, int]],
+    x: List[float],
     T: float,
-    cmp1_subgroups: Optional[List[int]] = None,
-    cmp2_subgroups: Optional[List[int]] = None,
-) -> Tuple[float, float]:
+    check_temperature=True,
+) -> List[float]:
+    """
+    Calculate the UNIFAC activity coefficients for a mixture of components.
 
-    if not cmp1_subgroups:
-        try:
-            c1 = auto_fragmentation(SMILES1)
-        except Exception as ex:
-            raise ValueError(f"Fragmentation of component 1 has been failed: {ex}")
-    else:
-        c1 = cmp1_subgroups
+    The UNIFAC (UNIversal Functional Activity Coefficient) model is used to estimate
+    activity coefficients in multicomponent systems. This method calculates both the
+    combinatorial and residual contributions to the activity coefficient.
 
-    if not cmp2_subgroups:
-        try:
-            c2 = auto_fragmentation(SMILES2)
-        except Exception as ex:
-            raise ValueError(f"Fragmentation of component 2 has been failed: {ex}")
-    else:
-        c2 = cmp2_subgroups
+    Parameters:
+    ----------
+    components : List[Dict[int, int]]
+        A list of dictionaries, where each dictionary represents a component. The keys
+        are subgroup IDs, and the values are the number of times each subgroup appears
+        in the component.
+        Example: [{1: 2, 2: 4}, {1: 1, 3: 1, 2: 4}]
 
-    total_subgroups = {*c1, *c2}
-    total_maingroups = {
+    x : List[float]
+        A list of mole fractions for each component in the mixture. The length of this list
+        should match the number of components.
+
+    T : float
+        The temperature of the system (in Kelvin) at which the activity coefficients are
+        calculated.
+
+    check_temperature : bool, optional
+        If `True`, the function checks whether the given temperature falls within the valid
+        range for the interaction parameters. If the temperature is outside the range, an
+        error is raised. Default is `True`.
+
+    Returns:
+    -------
+    List[float]
+        A list of activity coefficients for each component in the mixture.
+
+    Raises:
+    ------
+    ValueError
+        - If there are missing interaction parameters between main groups.
+        - If the given temperature is outside the valid range (when `check_temperature` is `True`).
+
+    Notes:
+    ------
+    - The activity coefficients are calculated using both combinatorial and residual terms.
+    - Interaction parameters are retrieved from the `parameters` module, which includes:
+        - `parameters.sub_to_main`: Mapping from subgroups to main groups.
+        - `parameters.subgroup_par`: Parameters for each subgroup (`Ri`, `Qi` values).
+        - `parameters.maingroup_par`: Interaction parameters between main groups (`a1`, `a2`, `a3`).
+
+    Example:
+    --------
+    ```python
+    components = [{1: 2, 2: 4}, {1: 1, 3: 1, 2: 4}]
+    mole_fractions = [0.5, 0.5]
+    temperature = 298.15
+
+    activity_coefficients = UNIFAC(components, mole_fractions, temperature)
+    print(activity_coefficients)  # 출력: [1.05, 0.97]
+    ```
+    """
+
+    num_components = len(components)
+    component_indexes = range(num_components)
+
+    cs: List[List[int]] = []
+    for component in components:
+        component_groups = []
+        for key, count in component.items():
+            component_groups.extend([key] * count)
+        cs.append(component_groups)
+
+    total_subgroups = list(set(group for c in cs for group in c))
+    total_maingroups = set(
         parameters.sub_to_main[subgroup] for subgroup in total_subgroups
-    }
+    )
 
-    Tmax = []
-    Tmin = []
-    iter_maingroups = []
-
-    for m in total_maingroups:
-        for n in total_maingroups:
-            if m == n:
-                continue
-            else:
-                if (m, n) in parameters.maingroup_par.keys():
-                    iter_maingroups.append((m, n))
-                    Tmax.append(parameters.maingroup_par[(m, n)]["Tmax"])
-                    Tmin.append(parameters.maingroup_par[(m, n)]["Tmin"])
+    # check temperature
+    if check_temperature:
+        Tmax = []
+        Tmin = []
+        iter_maingroups = []
+        for m in total_maingroups:
+            for n in total_maingroups:
+                if m == n:
+                    continue
                 else:
-                    raise ValueError(
-                        f"There are no interaction parameters between maingroup {m} and maingroup {n}."
-                    )
+                    if (m, n) in parameters.maingroup_par.keys():
+                        iter_maingroups.append((m, n))
+                        Tmax.append(parameters.maingroup_par[(m, n)]["Tmax"])
+                        Tmin.append(parameters.maingroup_par[(m, n)]["Tmin"])
+                    else:
+                        raise ValueError(
+                            f"There are no interaction parameters between maingroup {m} and maingroup {n}."
+                        )
+        if len(Tmax) != 0:
+            Tmax = max(Tmax)
+            Tmin = min(Tmin)
+            if T > Tmax or T < Tmin:
+                raise ValueError(
+                    "Current method is unsupported for the given temperature condition."
+                )
 
-    if len(Tmax) != 0:
-        Tmax = max(Tmax)
-        Tmin = min(Tmin)
-        if T > Tmax or T < Tmin:
-            raise ValueError(
-                "Current method is unsupported for the given temperature condition."
-            )
-
-    ####################
-    # Calcuation Start #
-    ####################
-    components = [c1, c2]
-    x = [x1, x2]
-    vk1 = {}
-    vk2 = {}
-    for k in total_subgroups:
-        vk1[k] = c1.count(k)
-        vk2[k] = c2.count(k)
-    vk = [vk1, vk2]
+    vks = []
+    for c in cs:
+        vk = {}
+        for k in total_subgroups:
+            vk[k] = c.count(k)
+        vks.append(vk)
 
     # Combinatorial Term
     r = []  # index = component
     q = []  # index = component
-    for index in [0, 1]:
+    for index in component_indexes:
         SumR, SumQ = 0.0, 0.0
-        for k in components[index]:
+        for k in cs[index]:
             SumR += parameters.subgroup_par[k]["Ri"]
             SumQ += parameters.subgroup_par[k]["Qi"]
         r.append(SumR)
@@ -129,17 +211,17 @@ def cal_activity_coefficient(
 
     J = []  # index = component
     L = []  # index = component
-    for i in [0, 1]:
+    for i in component_indexes:
         rx = 0.0
         qx = 0.0
-        for j in [0, 1]:
+        for j in component_indexes:
             rx += r[j] ** (3 / 4) * x[j]
             qx += q[j] * x[j]
         J.append(r[i] ** (3 / 4) / rx)
         L.append(q[i] / qx)
 
     ln_rc = []  # index = component
-    for i in [0, 1]:
+    for i in component_indexes:
         ln_rc.append(
             1 - J[i] + np.log(J[i]) - 5 * q[i] * (1 - J[i] / L[i] + np.log(J[i] / L[i]))
         )
@@ -147,14 +229,14 @@ def cal_activity_coefficient(
     # Residual Term
     e = {}  # key = (subgroup, component)
     for k in total_subgroups:
-        for i in [0, 1]:
-            e[(k, i)] = vk[i][k] * parameters.subgroup_par[k]["Qi"] / q[i]
+        for i in component_indexes:
+            e[(k, i)] = vks[i][k] * parameters.subgroup_par[k]["Qi"] / q[i]
 
     theta = {}  # key = subgroup
     for k in total_subgroups:
         xqe = 0
         xq = 0
-        for i in [0, 1]:
+        for i in component_indexes:
             xqe += x[i] * q[i] * e[(k, i)]
             xq += x[i] * q[i]
         theta[k] = xqe / xq
@@ -179,7 +261,7 @@ def cal_activity_coefficient(
             tow[(m, k)] = np.exp(-u[(m, k)] / T)
 
     betta = {}  # key = (component, subgroup)
-    for i in [0, 1]:
+    for i in component_indexes:
         for k in total_subgroups:
             sumbetta = 0
             for m in total_subgroups:
@@ -194,7 +276,7 @@ def cal_activity_coefficient(
         s[k] = sums
 
     ln_rr = []  # index = component
-    for i in [0, 1]:
+    for i in component_indexes:
         sum_residual = 0
         for k in total_subgroups:
             sum_residual += theta[k] * betta[(i, k)] / s[k] - e[(k, i)] * np.log(
@@ -203,7 +285,7 @@ def cal_activity_coefficient(
         ln_rr.append(q[i] * (1 - sum_residual))
 
     ln_r = []  # key = component
-    for i in [0, 1]:
+    for i in component_indexes:
         ln_r.append(ln_rc[i] + ln_rr[i])
 
     activity_coefficient = np.exp(ln_r)
