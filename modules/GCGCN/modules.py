@@ -192,7 +192,7 @@ def fragment_molecule(SMILES: str) -> dict:
     return group_index
 
 
-def _get_input_matrices(SMILES: str, max_atom=25) -> Tuple[np.ndarray, np.ndarray]:
+def get_input_matrices(SMILES: str, max_atom=25) -> Tuple[np.ndarray, np.ndarray]:
     """
     Convert the molecule to input matrices.
 
@@ -324,7 +324,7 @@ def predict_HFORM(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted heat of formation and its uncertainty. (kJ/mol)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in HFORM_param_list:
@@ -350,7 +350,7 @@ def predict_HFUS(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted heat of fusion and its uncertainty. (kJ/mol)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in HFUS_param_list:
@@ -376,7 +376,7 @@ def predict_PC(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted critical pressure and its uncertainty. (kPa)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in PC_param_list:
@@ -402,7 +402,7 @@ def predict_TC(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted critical temperature and its uncertainty. (K)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in TC_param_list:
@@ -428,7 +428,7 @@ def predict_TBN(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted boiling point and its uncertainty. (K)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in TBN_param_list:
@@ -454,7 +454,7 @@ def predict_TF(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted flash point and its uncertainty. (K)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in TF_param_list:
@@ -480,7 +480,7 @@ def predict_TMN(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted melting point and its uncertainty. (K)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in TMN_param_list:
@@ -506,7 +506,7 @@ def predict_VC(SMILES: str) -> Tuple[float, float]:
     Tuple[float, float]
         Predicted critical volume and its uncertainty. (L/mol)
     """
-    nfm, efm = _get_input_matrices(SMILES)
+    nfm, efm = get_input_matrices(SMILES)
 
     result = []
     for param_list in VC_param_list:

@@ -5,7 +5,7 @@ Deprecated Code
 import numpy as np
 import matplotlib.pyplot as plt
 
-import vapor_pressure.equations as vp
+import modules.vapor_pressure.equations.module as vp
 
 
 def NRTL(x1, x2, T, a12, a21, b12, b21, c):
