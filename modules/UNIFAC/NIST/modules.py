@@ -7,9 +7,6 @@ from rdkit.Chem import Descriptors
 from . import parameters
 
 
-RDLogger.DisableLog("rdApp.*")
-
-
 def auto_fragmentation(SMILES: str) -> List[int]:
     try:
         mol = Chem.MolFromSmiles(SMILES)

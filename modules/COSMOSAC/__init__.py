@@ -1,7 +1,7 @@
 from typing import List
 
 from .calculation_module import calculate_gamma
-from .retrieve_comso import retrieve_chemical_profiles
+from .retrieve_COSMOs import retrieve_chemical_profiles
 
 
 def calculate_binary_gamma(
