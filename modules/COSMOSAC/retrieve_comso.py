@@ -1,8 +1,8 @@
 from numpy import ndarray
 from typing import List, TypedDict
 
-from cheker import have_COSMO, is_only_consist_with
-from COSMO_calculation import (
+from .cheker import have_COSMO, is_only_consist_with
+from .COSMO_calculation import (
     get_file_dir_from_SMILES,
     retrieve_sigma_profile,
     calculate_sigma_profile,
