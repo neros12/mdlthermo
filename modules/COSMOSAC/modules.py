@@ -14,7 +14,7 @@ FILE_DIR = Path(__file__).parent
 class COSMOSAC:
     # Some codes are from https://doi.org/10.1021/acs.jctc.9b01016
 
-    def __init__(self, version=2010, predict=True):
+    def __init__(self, version=2010, predict=False):
         # version and system
         self.predict = predict
         if predict:
@@ -771,17 +771,19 @@ class COSMOSAC:
         """
         if file is not None:  # If COSMO file is given
             self.add_comp_from_COSMO_file(file, name=name)
+        # else:
+        #     self.add_comp_from_GCGCN_CPU(SMILES)
 
         elif SMILES is not None:  # If SMILES string is given
             file_dir = get_COSMO_file_dir(SMILES)
 
             if file_dir is not None:  # If the COSMO file exists
                 self.add_comp_from_COSMO_file(file_dir)
-            else:  # Else, predict the COSMO properties
-                self.add_comp_from_GCGCN_CPU(SMILES)
+            # else:  # Else, predict the COSMO properties
+            #     self.add_comp_from_GCGCN_CPU(SMILES)
 
-        else:
-            raise ValueError("The COSMO file or SMILES string is necessary.")
+        # else:
+        #     raise ValueError("The COSMO file or SMILES string is necessary.")
 
     def add_comp_from_COSMO_file(self, file, name=None):
         """Add a component to the COSMO-SAC object.
@@ -797,6 +799,7 @@ class COSMOSAC:
         A, V, atom, coord, seg = self.get_cosmo(file)
         bond = self.get_bond(atom, coord)
         dtype, stype, dnatr = self.get_atom_type(atom, bond)
+
         psigA = self.get_sigma(atom, seg, stype).reshape(1, self._num_sp, 51)
         ek = self.get_dsp(dtype)
 
@@ -845,14 +848,15 @@ class COSMOSAC:
         """Delete a component from the COSMO-SAC object."""
         self.A = np.array([])
         self.V = np.array([])
-        self.psigA = np.array([])
+        self.psigA = np.array([]).reshape(0, self._num_sp, 51)
         self.ek = np.array([])
 
         self.dnatr = []
         self.name = []
 
     def cal_DW(self, T):
-        """Calculate the exchange energy.
+        """
+        Calculate the exchange energy.
 
         The exchange energy has the values for each charge density combinations
         and sigma profile type combinations, therefore having the shape of
@@ -1073,7 +1077,7 @@ class COSMOSAC:
         return gam
 
 
-def get_COSMO_file_dir(SMILES: str) -> (str | None):
+def get_COSMO_file_dir(SMILES: str) -> str | None:
     """Get COSMO file's directory if there is already calculated molecule.
 
     Parameters
@@ -1089,11 +1093,13 @@ def get_COSMO_file_dir(SMILES: str) -> (str | None):
     ------
     ValueError : If the molecule is not readable by rdkit.
     """
+    print(1)
+
     with open(opj(FILE_DIR, "InChIKey_to_index.json")) as json_file:
         InChIKey_to_index = json.load(json_file)
 
     try:
-       InChIKey = Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(SMILES))
+        InChIKey = Chem.inchi.MolToInchiKey(Chem.MolFromSmiles(SMILES))
     except ValueError:
         raise ValueError("The molecule is not supported.")
 
