@@ -1,5 +1,5 @@
 git_ignore
-/test.py
+test.py
 *.xlsx
 
 # Byte-compiled / optimized / DLL files
