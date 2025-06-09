@@ -1,5 +1,5 @@
 import numpy as np
-
+from typing import List, TypedDict
 
 _q0 = 79.53  # area normalization parameter [Å**2]
 _r0 = 66.69  # volume normalization parameter [Å**3]
@@ -211,18 +211,44 @@ def cal_ln_gam_dsp(x, ek, dnatr):
     return ln_gam_dsp
 
 
-def calculate_gamma(chemical_profiles: list, x: list, T: float) -> list:
+class ChemicalProfile(TypedDict):
+    area: float
+    volume: float
+    sigma_profiles: np.ndarray
+
+
+class ChemicalProfiles(TypedDict):
+    version: int
+    data: List[ChemicalProfile]
+
+
+def calculate_gamma(
+    chemical_profiles: ChemicalProfiles,
+    x: List[float],
+    T: float,
+) -> List[float]:
     """
-    Calculate COSMO-SAC activity coefficients.
+    Calculate COSMO-SAC activity coefficients for a mixture of components.
+
+    This function computes the activity coefficients of components in a mixture
+    based on the COSMO-SAC model. It considers combinatorial, residual, and dispersion
+    contributions using sigma profiles and molecular properties.
 
     Parameters
     ----------
-    None.
+    chemical_profiles : ChemicalProfiles
+        Dictionary containing 'version' and a list of component profiles. Each profile
+        includes area, volume, sigma_profiles, ek (electrostatic energy), and natr
+        (atom type information).
+    x : List[float]
+        Mole fraction of each component in the mixture.
+    T : float
+        Temperature in Kelvin.
 
     Returns
     -------
-    gam : list of shape=(num_comp,)
-        Activity coefficients of components.
+    gam : List[float]
+        A list of activity coefficients for each component in the same order as `x`.
     """
     version = chemical_profiles["version"]
     if version == 2020:
