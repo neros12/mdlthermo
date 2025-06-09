@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
-from rdkit import Chem, RDLogger
+from rdkit import Chem
 from rdkit.Chem import Descriptors
 
 from . import parameters
